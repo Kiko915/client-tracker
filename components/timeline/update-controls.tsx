@@ -1,0 +1,142 @@
+"use client";
+
+import { useState } from "react";
+import { updateUpdateAction, deleteUpdateAction } from "@/app/actions";
+import type { ProjectUpdate } from "@/lib/types";
+
+export function UpdateControls({
+  item,
+  projectId
+}: {
+  item: ProjectUpdate;
+  projectId: string;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  if (isEditing) {
+    return (
+      <div
+        className="card stack"
+        style={{
+          marginTop: "1rem",
+          padding: "1rem",
+          backgroundColor: "var(--card-bg-alt, rgba(0,0,0,0.02))"
+        }}
+      >
+        <h3 className="section-title" style={{ fontSize: "14px" }}>
+          Edit Update
+        </h3>
+        <form
+          className="stack"
+          encType="multipart/form-data"
+          action={async (formData) => {
+            await updateUpdateAction(item.id, projectId, formData);
+            setIsEditing(false);
+          }}
+        >
+          <div className="form-grid">
+            <label className="label full-span">
+              Title
+              <input
+                className="input"
+                name="title"
+                defaultValue={item.title}
+                required
+              />
+            </label>
+            <label className="label full-span">
+              Notes
+              <textarea
+                className="textarea"
+                name="body"
+                defaultValue={item.body}
+                required
+              />
+            </label>
+            <label className="label">
+              Progress %
+              <input
+                className="input"
+                min={0}
+                max={100}
+                name="progress_percent"
+                type="number"
+                defaultValue={item.progress_percent}
+                required
+              />
+            </label>
+            <label className="label full-span">
+              Images (optional, overwrites current)
+              <input
+                className="input"
+                name="timeline_images"
+                type="file"
+                accept="image/*"
+                multiple
+              />
+            </label>
+            <label className="label full-span">
+              Videos (optional, overwrites current)
+              <input
+                className="input"
+                name="timeline_videos"
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                multiple
+              />
+            </label>
+          </div>
+          <div className="row" style={{ marginTop: "1rem" }}>
+            <button className="btn" type="submit">
+              Save Changes
+            </button>
+            <button
+              className="btn secondary"
+              type="button"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div className="row" style={{ marginTop: "1rem" }}>
+      <button
+        className="btn secondary"
+        style={{ padding: "0.25rem 0.75rem", fontSize: "12px" }}
+        type="button"
+        onClick={() => setIsEditing(true)}
+      >
+        Edit
+      </button>
+
+      <button
+        className="btn secondary"
+        style={{
+          padding: "0.25rem 0.75rem",
+          fontSize: "12px",
+          color: "var(--color-danger, #ef4444)",
+          borderColor: isDeleting
+            ? "var(--color-danger, #ef4444)"
+            : "transparent"
+        }}
+        type="button"
+        onClick={async () => {
+          if (isDeleting) {
+            await deleteUpdateAction(item.id);
+          } else {
+            setIsDeleting(true);
+            setTimeout(() => setIsDeleting(false), 3000);
+          }
+        }}
+      >
+        {isDeleting ? "Confirm Delete" : "Delete"}
+      </button>
+    </div>
+  );
+}
