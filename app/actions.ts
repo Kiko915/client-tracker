@@ -33,6 +33,10 @@ function getMediaExtension(file: File) {
     "video/mp4": "mp4",
     "video/webm": "webm",
     "video/quicktime": "mov",
+    "application/pdf": "pdf",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      "docx",
   };
   return byMime[file.type] ?? "bin";
 }
@@ -47,9 +51,14 @@ async function uploadTimelineMedia(
   projectId: string,
   imageFiles: File[],
   videoFiles: File[],
+  documentFiles: File[] = [],
 ) {
   const admin = createAdminClient();
-  const items: { type: "image" | "video"; url: string }[] = [];
+  const items: {
+    type: "image" | "video" | "document";
+    url: string;
+    name?: string;
+  }[] = [];
 
   for (const file of imageFiles) {
     if (!file.type.startsWith("image/")) {
@@ -89,6 +98,23 @@ async function uploadTimelineMedia(
     }
     const { data } = admin.storage.from("timeline-media").getPublicUrl(path);
     items.push({ type: "video", url: data.publicUrl });
+  }
+
+  for (const file of documentFiles) {
+    const ext = getMediaExtension(file);
+    const path = `${projectId}/${randomUUID()}.${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { error } = await admin.storage
+      .from("timeline-media")
+      .upload(path, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
+    if (error) {
+      throw new Error(error.message);
+    }
+    const { data } = admin.storage.from("timeline-media").getPublicUrl(path);
+    items.push({ type: "document", url: data.publicUrl, name: file.name });
   }
 
   return items;
@@ -230,7 +256,13 @@ export async function createUpdateAction(
 
   const imageFiles = collectDataFiles(formData, "timeline_images");
   const videoFiles = collectDataFiles(formData, "timeline_videos");
-  const media = await uploadTimelineMedia(projectId, imageFiles, videoFiles);
+  const documentFiles = collectDataFiles(formData, "timeline_documents");
+  const media = await uploadTimelineMedia(
+    projectId,
+    imageFiles,
+    videoFiles,
+    documentFiles,
+  );
   const firstImageUrl = media.find((m) => m.type === "image")?.url ?? null;
 
   const supabase = await createClient();
@@ -267,9 +299,19 @@ export async function updateUpdateAction(
 
   const imageFiles = collectDataFiles(formData, "timeline_images");
   const videoFiles = collectDataFiles(formData, "timeline_videos");
+  const documentFiles = collectDataFiles(formData, "timeline_documents");
 
-  if (imageFiles.length > 0 || videoFiles.length > 0) {
-    const media = await uploadTimelineMedia(projectId, imageFiles, videoFiles);
+  if (
+    imageFiles.length > 0 ||
+    videoFiles.length > 0 ||
+    documentFiles.length > 0
+  ) {
+    const media = await uploadTimelineMedia(
+      projectId,
+      imageFiles,
+      videoFiles,
+      documentFiles,
+    );
     const firstImageUrl = media.find((m) => m.type === "image")?.url ?? null;
     updatePayload.media = media;
     updatePayload.image_url = firstImageUrl;

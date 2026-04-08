@@ -6,7 +6,7 @@ import type { ProjectUpdate } from "@/lib/types";
 
 export function UpdateControls({
   item,
-  projectId
+  projectId,
 }: {
   item: ProjectUpdate;
   projectId: string;
@@ -21,7 +21,7 @@ export function UpdateControls({
         style={{
           marginTop: "1rem",
           padding: "1rem",
-          backgroundColor: "var(--card-bg-alt, rgba(0,0,0,0.02))"
+          backgroundColor: "var(--card-bg-alt, rgba(0,0,0,0.02))",
         }}
       >
         <h3 className="section-title" style={{ fontSize: "14px" }}>
@@ -86,6 +86,16 @@ export function UpdateControls({
                 multiple
               />
             </label>
+            <label className="label full-span">
+              Documents (optional, overwrites current)
+              <input
+                className="input"
+                name="timeline_documents"
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                multiple
+              />
+            </label>
           </div>
           <div className="row" style={{ marginTop: "1rem" }}>
             <button className="btn" type="submit">
@@ -123,7 +133,7 @@ export function UpdateControls({
           color: "var(--color-danger, #ef4444)",
           borderColor: isDeleting
             ? "var(--color-danger, #ef4444)"
-            : "transparent"
+            : "transparent",
         }}
         type="button"
         onClick={async () => {

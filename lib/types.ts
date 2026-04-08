@@ -12,8 +12,9 @@ export type Project = {
 };
 
 export type TimelineMediaItem = {
-  type: "image" | "video";
+  type: "image" | "video" | "document";
   url: string;
+  name?: string;
 };
 
 export type ProjectUpdate = {
