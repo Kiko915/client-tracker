@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Client Progress Tracker",
-  description: "Share project progress with clients in real time."
+  description: "Share project progress with clients in real time.",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
@@ -29,6 +30,7 @@ export default function RootLayout({
           </div>
         </header>
         {children}
+        <Analytics />
       </body>
     </html>
   );
