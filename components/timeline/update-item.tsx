@@ -9,61 +9,62 @@ import { UpdateControls } from "./update-controls";
 export function UpdateItem({
   item,
   isAdmin,
+  isLatest = false,
+  isLast = false,
 }: {
   item: ProjectUpdate;
   isAdmin?: boolean;
+  isLatest?: boolean;
+  isLast?: boolean;
 }) {
   const media = getTimelineMedia(item);
   const galleryMedia = media.filter((m) => m.type !== "document");
   const documents = media.filter((m) => m.type === "document");
+  const updateDateLabel = new Date(item.created_at).toLocaleString();
 
   return (
-    <article className="timeline-item stack">
-      <div className="row">
-        <strong style={{ fontSize: "14px" }}>{item.title}</strong>
-
-        <span className="badge">{item.progress_percent}%</span>
-      </div>
-
-      <p className="muted">{item.body}</p>
-
-      {galleryMedia.length > 0 && <TimelineMediaGallery media={galleryMedia} />}
-
-      {documents.length > 0 && (
-        <div className="stack" style={{ gap: "0.5rem" }}>
-          {documents.map((doc, idx) => (
-            <a
-              key={`${doc.url}-${idx}`}
-              href={doc.url}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.5rem 0.75rem",
-                backgroundColor: "var(--card-bg-alt, rgba(0,0,0,0.02))",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-md)",
-                textDecoration: "none",
-                color: "inherit",
-                fontSize: "13px",
-                fontWeight: 500,
-                width: "fit-content",
-              }}
-            >
-              <FileText size={16} color="var(--color-primary, #2563eb)" />
-              {doc.name || "Attached Document"}
-            </a>
-          ))}
+    <article className={`timeline-entry ${isLatest ? "is-latest" : ""}`}>
+      <aside className="timeline-rail" aria-hidden="true">
+        <span
+          className="timeline-dot"
+          title={updateDateLabel}
+          aria-label={`Update created at ${updateDateLabel}`}
+        />
+        {!isLast && <span className="timeline-line" />}
+      </aside>
+      <div className="timeline-item stack">
+        <div className="row">
+          <strong className="timeline-title">{item.title}</strong>
+          <span className="badge timeline-progress">{item.progress_percent}%</span>
         </div>
-      )}
 
-      <small className="muted">
-        {new Date(item.created_at).toLocaleString()}
-      </small>
+        <p className="muted timeline-body">{item.body}</p>
 
-      {isAdmin && <UpdateControls item={item} projectId={item.project_id} />}
+        {galleryMedia.length > 0 && <TimelineMediaGallery media={galleryMedia} />}
+
+        {documents.length > 0 && (
+          <div className="stack timeline-documents" style={{ gap: "0.5rem" }}>
+            {documents.map((doc, idx) => (
+              <a
+                key={`${doc.url}-${idx}`}
+                href={doc.url}
+                target="_blank"
+                rel="noreferrer"
+                className="timeline-doc-link"
+              >
+                <FileText size={16} color="#2563eb" />
+                {doc.name || "Attached Document"}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <small className="muted timeline-date">
+          {new Date(item.created_at).toLocaleString()}
+        </small>
+
+        {isAdmin && <UpdateControls item={item} projectId={item.project_id} />}
+      </div>
     </article>
   );
 }

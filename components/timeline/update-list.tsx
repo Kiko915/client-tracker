@@ -26,14 +26,22 @@ export function UpdateList({
   }
 
   return (
-    <section className="card stack">
+    <section className="card timeline-shell stack">
       <div className="row">
         <h2 className="section-title">Progress Timeline</h2>
         <span className="chip">{updates.length} updates</span>
       </div>
-      {updates.map((item) => (
-        <UpdateItem key={item.id} item={item} isAdmin={isAdmin} />
-      ))}
+      <div className="timeline-list">
+        {updates.map((item, index) => (
+          <UpdateItem
+            key={item.id}
+            item={item}
+            isAdmin={isAdmin}
+            isLatest={index === 0}
+            isLast={index === updates.length - 1}
+          />
+        ))}
+      </div>
     </section>
   );
 }
