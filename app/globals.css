@@ -27,6 +27,8 @@ body {
   color: var(--text);
   font-size: 14px;
   line-height: 1.45;
+  scrollbar-width: thin;
+  scrollbar-color: #b8c1cd #eef2f7;
 }
 
 h1,
@@ -39,6 +41,27 @@ p {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Global modern thin scrollbar (Firefox + WebKit/Blink). */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #eef2f7;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #c7ced8, #aeb7c4);
+  border-radius: 999px;
+  border: 2px solid #eef2f7;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #b7c0cb, #9ca6b5);
 }
 
 .brand-shell {
