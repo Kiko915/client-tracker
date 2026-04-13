@@ -43,8 +43,29 @@ function buildHeatmap(updates: ProjectUpdate[], days = 84) {
     weeks.push(week);
   }
 
+  const monthMarkers: { index: number; label: string }[] = [];
+  const currentYear = new Date().getFullYear();
+  let lastMonthKey = "";
+  weeks.forEach((week, index) => {
+    const firstDay = week[0];
+    if (!firstDay) return;
+
+    const monthDate = new Date(`${firstDay.date}T00:00:00`);
+    const monthKey = `${monthDate.getFullYear()}-${monthDate.getMonth()}`;
+    if (monthKey === lastMonthKey) return;
+
+    const month = monthDate.toLocaleString("en-US", { month: "short" });
+    const yearSuffix =
+      monthDate.getFullYear() === currentYear
+        ? ""
+        : ` '${String(monthDate.getFullYear()).slice(-2)}`;
+    monthMarkers.push({ index, label: `${month}${yearSuffix}` });
+    lastMonthKey = monthKey;
+  });
+
   return {
     weeks,
+    monthMarkers,
     totalUpdates: updates.length,
     activeDays: cells.filter((c) => c.count > 0).length,
     maxCount,
@@ -181,23 +202,42 @@ export default async function TrackPage({
               Darker cells indicate higher activity
             </small>
           </div>
-          <div
-            className="heatmap-grid"
-            aria-label="Daily update activity heatmap"
-          >
-            {heatmap.weeks.map((week, weekIndex) => (
-              <div className="heatmap-week" key={`week-${weekIndex}`}>
-                {week.map((day) => (
-                  <div
-                    className={`heatmap-cell heatmap-l${day.level}`}
-                    key={day.date}
-                    title={`${day.date}: ${day.count} update${day.count === 1 ? "" : "s"}`}
-                  />
-                ))}
-              </div>
-            ))}
+          <div className="heatmap-center">
+            <div
+              className="heatmap-months"
+              style={{
+                gridTemplateColumns: `repeat(${heatmap.weeks.length}, 14px)`,
+              }}
+              aria-hidden="true"
+            >
+              {heatmap.monthMarkers.map((marker) => (
+                <span
+                  className="heatmap-month-label"
+                  key={`${marker.index}-${marker.label}`}
+                  style={{ gridColumnStart: marker.index + 1 }}
+                >
+                  {marker.label}
+                </span>
+              ))}
+            </div>
+            <div
+              className="heatmap-grid"
+              aria-label="Daily update activity heatmap"
+            >
+              {heatmap.weeks.map((week, weekIndex) => (
+                <div className="heatmap-week" key={`week-${weekIndex}`}>
+                  {week.map((day) => (
+                    <div
+                      className={`heatmap-cell heatmap-l${day.level}`}
+                      key={day.date}
+                      title={`${day.date}: ${day.count} update${day.count === 1 ? "" : "s"}`}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="row">
+          <div className="heatmap-scale">
             <small className="muted">Less</small>
             <div className="heatmap-legend">
               <span className="heatmap-cell heatmap-l0" />
