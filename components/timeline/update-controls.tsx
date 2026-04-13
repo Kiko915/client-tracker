@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateUpdateAction, deleteUpdateAction } from "@/app/actions";
+import { PendingSubmitButton } from "@/components/form/pending-submit-button";
 import type { ProjectUpdate } from "@/lib/types";
 
 export function UpdateControls({
@@ -13,6 +14,7 @@ export function UpdateControls({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeletePending, setIsDeletePending] = useState(false);
 
   if (isEditing) {
     return (
@@ -98,9 +100,10 @@ export function UpdateControls({
             </label>
           </div>
           <div className="row" style={{ marginTop: "1rem" }}>
-            <button className="btn" type="submit">
-              Save Changes
-            </button>
+            <PendingSubmitButton
+              idleLabel="Save Changes"
+              pendingLabel="Saving Changes..."
+            />
             <button
               className="btn secondary"
               type="button"
@@ -117,8 +120,7 @@ export function UpdateControls({
   return (
     <div className="row" style={{ marginTop: "1rem" }}>
       <button
-        className="btn secondary"
-        style={{ padding: "0.25rem 0.75rem", fontSize: "12px" }}
+        className="btn secondary compact"
         type="button"
         onClick={() => setIsEditing(true)}
       >
@@ -126,26 +128,28 @@ export function UpdateControls({
       </button>
 
       <button
-        className="btn secondary"
-        style={{
-          padding: "0.25rem 0.75rem",
-          fontSize: "12px",
-          color: "var(--color-danger, #ef4444)",
-          borderColor: isDeleting
-            ? "var(--color-danger, #ef4444)"
-            : "transparent",
-        }}
+        className={`btn compact danger ${isDeleting ? "confirm" : ""}`}
         type="button"
+        disabled={isDeletePending}
         onClick={async () => {
           if (isDeleting) {
-            await deleteUpdateAction(item.id);
+            setIsDeletePending(true);
+            try {
+              await deleteUpdateAction(item.id);
+            } finally {
+              setIsDeletePending(false);
+            }
           } else {
             setIsDeleting(true);
             setTimeout(() => setIsDeleting(false), 3000);
           }
         }}
       >
-        {isDeleting ? "Confirm Delete" : "Delete"}
+        {isDeletePending
+          ? "Deleting..."
+          : isDeleting
+            ? "Confirm Delete"
+            : "Delete"}
       </button>
     </div>
   );

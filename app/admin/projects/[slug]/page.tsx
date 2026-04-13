@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createUpdateAction, updateProjectAction } from "@/app/actions";
+import { PendingSubmitButton } from "@/components/form/pending-submit-button";
 import { UpdateList } from "@/components/timeline/update-list";
 import { createClient } from "@/lib/supabase/server";
 import type { Project, ProjectUpdate } from "@/lib/types";
@@ -119,9 +120,11 @@ export default async function ProjectDetailsPage({
               </select>
             </label>
           </div>
-          <button className="btn secondary" type="submit">
-            Save Project Info
-          </button>
+          <PendingSubmitButton
+            className="btn secondary"
+            idleLabel="Save Project Info"
+            pendingLabel="Saving Project Info..."
+          />
         </form>
       </section>
 
@@ -186,9 +189,10 @@ export default async function ProjectDetailsPage({
               />
             </label>
           </div>
-          <button className="btn" type="submit">
-            Save Update
-          </button>
+          <PendingSubmitButton
+            idleLabel="Save Update"
+            pendingLabel="Saving Update..."
+          />
         </form>
       </section>
 

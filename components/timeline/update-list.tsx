@@ -11,39 +11,17 @@ export function UpdateList({
 }) {
   if (!updates.length) {
     return (
-      <div
-        className="card stack"
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "4rem 2rem",
-          textAlign: "center",
-          border: "1px dashed var(--border)",
-          backgroundColor: "var(--card-bg-alt, rgba(0,0,0,0.02))",
-        }}
-      >
-        <div
-          style={{
-            background: "var(--card-bg)",
-            padding: "1rem",
-            borderRadius: "50%",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-            marginBottom: "1rem",
-          }}
-        >
-          <ClipboardList size={32} color="var(--color-primary, #2563eb)" />
+      <section className="card empty-state stack" role="status" aria-live="polite">
+        <div className="empty-state-icon-wrap" aria-hidden="true">
+          <ClipboardList size={26} color="#1d4ed8" />
         </div>
-        <h3
-          className="section-title"
-          style={{ fontSize: "18px", marginBottom: "0.5rem" }}
-        >
-          No Updates Yet
-        </h3>
-        <p className="muted" style={{ maxWidth: "400px", margin: "0 auto" }}>
-          The project timeline is currently empty. Check back later for the
-          latest progress reports, milestones, and media.
+        <h3 className="empty-state-title">No Updates Yet</h3>
+        <p className="empty-state-body">
+          {isAdmin
+            ? "No timeline entries have been published. Add the first project update to start client-facing reporting."
+            : "There are no timeline entries yet. Updates will appear here as progress is published."}
         </p>
-      </div>
+      </section>
     );
   }
 

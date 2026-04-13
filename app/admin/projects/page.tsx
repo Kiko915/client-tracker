@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createProjectAction, signOutAction } from "@/app/actions";
+import { PendingSubmitButton } from "@/components/form/pending-submit-button";
 import { createClient } from "@/lib/supabase/server";
 import type { Project } from "@/lib/types";
 
@@ -25,9 +26,11 @@ export default async function ProjectsPage() {
         <div className="row">
           <h1 className="page-title">Project Operations</h1>
           <form action={signOutAction}>
-            <button className="btn secondary" type="submit">
-              Sign out
-            </button>
+            <PendingSubmitButton
+              className="btn secondary"
+              idleLabel="Sign out"
+              pendingLabel="Signing out..."
+            />
           </form>
         </div>
         <p className="muted">
@@ -87,9 +90,10 @@ export default async function ProjectsPage() {
               </select>
             </label>
           </div>
-          <button className="btn" type="submit">
-            Create Project
-          </button>
+          <PendingSubmitButton
+            idleLabel="Create Project"
+            pendingLabel="Creating Project..."
+          />
         </form>
       </section>
     </main>

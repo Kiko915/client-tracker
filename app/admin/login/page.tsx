@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signInAction } from "@/app/actions";
+import { PendingSubmitButton } from "@/components/form/pending-submit-button";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminLoginPage() {
@@ -34,9 +35,7 @@ export default async function AdminLoginPage() {
             Password
             <input className="input" name="password" type="password" required />
           </label>
-          <button className="btn" type="submit">
-            Sign in
-          </button>
+          <PendingSubmitButton idleLabel="Sign in" pendingLabel="Signing in..." />
         </form>
       </section>
     </main>
