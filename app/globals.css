@@ -450,6 +450,60 @@ a {
   gap: 10px;
 }
 
+.analytics-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d3ddec;
+  border-radius: 999px;
+  padding: 4px;
+  background: linear-gradient(180deg, #ffffff, #f5f9ff);
+  width: fit-content;
+}
+
+.analytics-tab {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+.analytics-tab:hover {
+  background: #eef4ff;
+  color: #1e3a8a;
+}
+
+.analytics-tab.is-active {
+  background: linear-gradient(180deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
+}
+
+.advanced-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.advanced-chart-card {
+  border: 1px solid #d0dced;
+  border-radius: 12px;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.chart-surface {
+  width: 100%;
+  min-height: 260px;
+}
+
 .progress-card {
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -652,13 +706,23 @@ a {
   }
 
   .analytics-grid,
-  .kpi-grid {
+  .kpi-grid,
+  .advanced-grid {
     grid-template-columns: 1fr;
   }
 
   .meta-grid,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .analytics-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .analytics-tab {
+    flex: 1;
   }
 
   .timeline-shell {
