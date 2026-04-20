@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { createUpdateAction, updateProjectAction } from "@/app/actions";
+import { updateProjectAction } from "@/app/actions";
 import { PendingSubmitButton } from "@/components/form/pending-submit-button";
+import { CreateUpdateForm } from "@/components/timeline/create-update-form";
 import { UpdateList } from "@/components/timeline/update-list";
 import { createClient } from "@/lib/supabase/server";
 import type { Project, ProjectUpdate } from "@/lib/types";
@@ -128,75 +129,18 @@ export default async function ProjectDetailsPage({
         </form>
       </section>
 
-      <section className="card stack">
-        <h2 className="section-title">Add Timeline Update</h2>
-        <form
-          className="stack"
-          encType="multipart/form-data"
-          action={async (formData) => {
-            "use server";
-            await createUpdateAction((project as Project).id, formData);
-          }}
-        >
-          <div className="form-grid">
-            <label className="label full-span">
-              Title
-              <input className="input" name="title" required />
-            </label>
-            <label className="label full-span">
-              Notes
-              <textarea className="textarea" name="body" required />
-            </label>
-            <label className="label">
-              Progress %
-              <input
-                className="input"
-                min={0}
-                max={100}
-                name="progress_percent"
-                type="number"
-                required
-              />
-            </label>
-            <label className="label full-span">
-              Images (optional)
-              <input
-                className="input"
-                name="timeline_images"
-                type="file"
-                accept="image/*"
-                multiple
-              />
-            </label>
-            <label className="label full-span">
-              Videos (optional)
-              <input
-                className="input"
-                name="timeline_videos"
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                multiple
-              />
-            </label>
-            <label className="label full-span">
-              Documents (optional)
-              <input
-                className="input"
-                name="timeline_documents"
-                type="file"
-                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                multiple
-              />
-            </label>
-          </div>
-          <PendingSubmitButton
-            idleLabel="Save Update"
-            pendingLabel="Saving Update..."
-          />
-        </form>
-      </section>
+      <CreateUpdateForm
+        projectId={(project as Project).id}
+        projectName={(project as Project).name}
+        clientName={(project as Project).client_name}
+      />
 
-      <UpdateList updates={(updates ?? []) as ProjectUpdate[]} isAdmin={true} />
+      <UpdateList
+        updates={(updates ?? []) as ProjectUpdate[]}
+        isAdmin={true}
+        projectName={(project as Project).name}
+        clientName={(project as Project).client_name}
+      />
     </main>
   );
 }

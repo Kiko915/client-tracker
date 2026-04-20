@@ -5,9 +5,13 @@ import { UpdateItem } from "./update-item";
 export function UpdateList({
   updates,
   isAdmin = false,
+  projectName,
+  clientName,
 }: {
   updates: ProjectUpdate[];
   isAdmin?: boolean;
+  projectName?: string;
+  clientName?: string;
 }) {
   if (!updates.length) {
     return (
@@ -39,6 +43,8 @@ export function UpdateList({
             isAdmin={isAdmin}
             isLatest={index === 0}
             isLast={index === updates.length - 1}
+            projectName={projectName}
+            clientName={clientName}
           />
         ))}
       </div>

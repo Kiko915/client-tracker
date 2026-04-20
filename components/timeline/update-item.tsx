@@ -11,11 +11,15 @@ export function UpdateItem({
   isAdmin,
   isLatest = false,
   isLast = false,
+  projectName,
+  clientName,
 }: {
   item: ProjectUpdate;
   isAdmin?: boolean;
   isLatest?: boolean;
   isLast?: boolean;
+  projectName?: string;
+  clientName?: string;
 }) {
   const media = getTimelineMedia(item);
   const galleryMedia = media.filter((m) => m.type !== "document");
@@ -63,7 +67,14 @@ export function UpdateItem({
           {new Date(item.created_at).toLocaleString()}
         </small>
 
-        {isAdmin && <UpdateControls item={item} projectId={item.project_id} />}
+        {isAdmin && (
+          <UpdateControls
+            item={item}
+            projectId={item.project_id}
+            projectName={projectName}
+            clientName={clientName}
+          />
+        )}
       </div>
     </article>
   );

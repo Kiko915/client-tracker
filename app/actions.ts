@@ -247,6 +247,7 @@ export async function createUpdateAction(
     title: formData.get("title"),
     body: formData.get("body"),
     progress_percent: formData.get("progress_percent"),
+    created_at: formData.get("created_at") || undefined,
   });
   if (!parsed.success) {
     throw new Error(
@@ -265,13 +266,21 @@ export async function createUpdateAction(
   );
   const firstImageUrl = media.find((m) => m.type === "image")?.url ?? null;
 
-  const supabase = await createClient();
-  const { error } = await supabase.from("project_updates").insert({
+  const insertPayload: Record<string, unknown> = {
     project_id: projectId,
-    ...parsed.data,
+    title: parsed.data.title,
+    body: parsed.data.body,
+    progress_percent: parsed.data.progress_percent,
     media,
     image_url: firstImageUrl,
-  });
+  };
+  if (parsed.data.created_at) {
+    const dt = new Date(parsed.data.created_at);
+    if (!isNaN(dt.getTime())) insertPayload.created_at = dt.toISOString();
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("project_updates").insert(insertPayload);
   if (error) {
     throw new Error(error.message);
   }
@@ -287,6 +296,7 @@ export async function updateUpdateAction(
     title: formData.get("title"),
     body: formData.get("body"),
     progress_percent: formData.get("progress_percent"),
+    created_at: formData.get("created_at") || undefined,
   });
   if (!parsed.success) {
     throw new Error(
@@ -295,7 +305,15 @@ export async function updateUpdateAction(
   }
 
   const supabase = await createClient();
-  const updatePayload: Record<string, unknown> = { ...parsed.data };
+  const updatePayload: Record<string, unknown> = {
+    title: parsed.data.title,
+    body: parsed.data.body,
+    progress_percent: parsed.data.progress_percent,
+  };
+  if (parsed.data.created_at) {
+    const dt = new Date(parsed.data.created_at);
+    if (!isNaN(dt.getTime())) updatePayload.created_at = dt.toISOString();
+  }
 
   const imageFiles = collectDataFiles(formData, "timeline_images");
   const videoFiles = collectDataFiles(formData, "timeline_videos");

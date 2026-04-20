@@ -2,19 +2,44 @@
 
 import { useState } from "react";
 import { updateUpdateAction, deleteUpdateAction } from "@/app/actions";
+import { enhanceNotesAction } from "@/app/ai-actions";
 import { PendingSubmitButton } from "@/components/form/pending-submit-button";
 import type { ProjectUpdate } from "@/lib/types";
 
 export function UpdateControls({
   item,
   projectId,
+  projectName,
+  clientName,
 }: {
   item: ProjectUpdate;
   projectId: string;
+  projectName?: string;
+  clientName?: string;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeletePending, setIsDeletePending] = useState(false);
+  const [titleValue, setTitleValue] = useState(item.title);
+  const [body, setBody] = useState(item.body);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+
+  async function handleEnhance() {
+    setIsEnhancing(true);
+    try {
+      const result = await enhanceNotesAction({
+        title: titleValue,
+        body,
+        projectName: projectName ?? "",
+        clientName: clientName ?? "",
+      });
+      setBody(result);
+    } catch (e) {
+      console.error("Enhance failed:", e);
+    } finally {
+      setIsEnhancing(false);
+    }
+  }
 
   if (isEditing) {
     return (
@@ -43,16 +68,28 @@ export function UpdateControls({
               <input
                 className="input"
                 name="title"
-                defaultValue={item.title}
+                value={titleValue}
+                onChange={(e) => setTitleValue(e.target.value)}
                 required
               />
             </label>
             <label className="label full-span">
-              Notes
+              <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+                <span>Notes</span>
+                <button
+                  className="btn secondary compact"
+                  type="button"
+                  disabled={isEnhancing || !titleValue.trim()}
+                  onClick={handleEnhance}
+                >
+                  {isEnhancing ? "Enhancing..." : "✨ Enhance"}
+                </button>
+              </div>
               <textarea
                 className="textarea"
                 name="body"
-                defaultValue={item.body}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
                 required
               />
             </label>
@@ -66,6 +103,15 @@ export function UpdateControls({
                 type="number"
                 defaultValue={item.progress_percent}
                 required
+              />
+            </label>
+            <label className="label">
+              Date &amp; Time
+              <input
+                className="input"
+                name="created_at"
+                type="datetime-local"
+                defaultValue={item.created_at.slice(0, 16)}
               />
             </label>
             <label className="label full-span">
